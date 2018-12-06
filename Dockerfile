@@ -1,6 +1,6 @@
 FROM ubuntu
 
-MAINTAINER Eugene Svirskiy
+MAINTAINER Rich Shillingford 
 
 COPY ./php.conf /etc/nginx/sites-enabled/
 COPY ./info.php /www/sites/php/
