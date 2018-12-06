@@ -1,6 +1,6 @@
 # Author
 
-Eugene Svirskiy <eugene.svirskiy@gmail.com>
+Richard Shilingford  <Richard.Shillingford@Kaizentechpartners.com>
 
 # About
 
