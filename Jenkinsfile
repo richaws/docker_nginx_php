@@ -1,28 +1,36 @@
-pipeline {
-  agent { label 'docker' }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
-  triggers {
-    cron('@daily')
-  }
-  stages {
-    stage('Build') {
-      steps {
-        sh 'docker build -f "Dockerfile" -t esvirskiy/nginx-php:latest .'
-      }
-    }
-    stage('Publish') {
-      when {
-        branch 'master'
-      }
-      steps {
-	 // withDockerRegistry([ credentialsId: "6533de7e-17a4-4376-969b-e86bc1e4f903", url: "" ]) {
-        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+node {
+    def app
 
-          sh 'docker push esvirskiy/nginx-php:latest'
-	}
-      }
+    stage('Clone repository') {
+        /* Let's make sure we have the repository cloned to our workspace */
+
+        checkout scm
     }
-  }
+
+    stage('Build image') {
+        /* This builds the actual image; synonymous to
+         * docker build on the command line */
+
+        app = docker.build("esvirskiy/nginx-php")
+    }
+
+    stage('Test image') {
+        /* Ideally, we would run a test framework against our image.
+         * For this example, we're using a Volkswagen-type approach ;-) */
+
+        app.inside {
+            sh 'echo "Tests passed"'
+        }
+    }
+
+    stage('Push image') {
+        /* Finally, we'll push the image with two tags:
+         * First, the incremental build number from Jenkins
+         * Second, the 'latest' tag.
+         * Pushing multiple tags is cheap, as all the layers are reused. */
+        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
+        }
+    }
 }
