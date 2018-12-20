@@ -1,6 +1,7 @@
 # Author
 
 Richard Shilingford  <Richard.Shillingford@Kaizentechpartners.com>
+Jenkins pipeline build for CI
 
 # About
 
